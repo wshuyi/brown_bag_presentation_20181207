@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Shuyi Wang">
+  <title>Deep Transfer Learning for Classification</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css">
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="reveal.js/css/theme/league.css" id="theme">
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Deep Transfer Learning for Classification</h1>
+  <p class="author">Shuyi Wang</p>
+  <p class="date">Dec 2018</p>
+</section>
+
+<section><section id="introduction" class="title-slide slide level1"><h1>Introduction</h1></section><section id="outline" class="slide level2">
+<h2>Outline</h2>
+<ul>
+<li class="fragment">Classification</li>
+<li class="fragment">Machine Learning for Classification</li>
+<li class="fragment">Deep Learning for Classification</li>
+<li class="fragment">Deep Transfer Learning for Classification</li>
+</ul>
+</section></section>
+<section><section id="classification" class="title-slide slide level1"><h1>Classification</h1></section><section id="definition" class="slide level2">
+<h2>Definition</h2>
+<ul>
+<li class="fragment">Jacob, E. K. (2004). Classification and categorization: a difference that makes a difference.</li>
+<li class="fragment"><blockquote>
+<p>Classification as process involves the orderly and systematic assignment of each entity to <strong>one and only one</strong> class within a system of <strong>mutually exclusive</strong> and <strong>non overlapping</strong> classes.</p>
+</blockquote></li>
+</ul>
+</section><section id="application" class="slide level2">
+<h2>Application</h2>
+</section><section id="section" class="slide level2" data-background-image="repo/2018-12-06-17-26-54-649728.png" data-background-size="contain">
+<h2></h2>
+</section><section id="section-1" class="slide level2" data-background-image="repo/2018-12-06-17-27-47-374260.png" data-background-size="contain">
+<h2></h2>
+</section><section id="section-2" class="slide level2" data-background-image="repo/2018-12-06-19-54-12-933445.png" data-background-size="contain">
+<h2></h2>
+</section><section id="approaches" class="slide level2">
+<h2>Approaches</h2>
+<ul>
+<li class="fragment">human</li>
+<li class="fragment">machine</li>
+</ul>
+</section><section id="human" class="slide level2">
+<h2>human</h2>
+<ul>
+<li class="fragment">labor intensive</li>
+<li class="fragment">cannot handle big data</li>
+</ul>
+</section><section id="machine" class="slide level2">
+<h2>machine</h2>
+<ul>
+<li class="fragment">rule-based system</li>
+<li class="fragment">machine Learning</li>
+</ul>
+</section><section id="rule-based-system" class="slide level2">
+<h2>rule based system</h2>
+<ul>
+<li class="fragment">problem
+<ul>
+<li class="fragment">machines are dumb</li>
+</ul></li>
+<li class="fragment">human needs give them clear rules
+<ul>
+<li class="fragment">expert system</li>
+</ul></li>
+</ul>
+</section><section id="sometime-doesnt-work" class="slide level2">
+<h2>Sometime doesn’t work</h2>
+<ul>
+<li class="fragment">if rule is not clear</li>
+<li class="fragment">or simply wrong</li>
+</ul>
+</section><section id="example-of-failure" class="slide level2">
+<h2>example of failure</h2>
+<ul>
+<li class="fragment">Plato was applauded for his definition of man as a featherless biped</li>
+<li class="fragment">Diogenes the Cynic “plucked the feathers from a cock, brought it to Plato’s school, and said, ‘Here is Plato’s man.’”</li>
+</ul>
+</section><section id="section-3" class="slide level2" data-background-image="repo/2018-12-06-17-34-38-498270.png" data-background-size="contain">
+<h2></h2>
+</section><section id="what-if" class="slide level2">
+<h2>What if</h2>
+<ul>
+<li class="fragment">we cannot describe the rules</li>
+<li class="fragment">let machine learn from data</li>
+<li class="fragment">machine learning</li>
+</ul>
+</section></section>
+<section><section id="machine-learning-for-classification" class="title-slide slide level1"><h1>Machine Learning for Classification</h1></section><section id="machine-learning" class="slide level2">
+<h2>Machine learning</h2>
+<ul>
+<li class="fragment">Definition:</li>
+<li class="fragment">Machine learning (ML) is the study of algorithms and mathematical models that computer systems use to progressively improve their performance on a specific task. (Wikipedia)</li>
+</ul>
+</section><section id="illustration" class="slide level2">
+<h2>Illustration</h2>
+</section><section id="section-4" class="slide level2" data-background-image="repo/2018-12-06-17-14-39-633050.png" data-background-size="contain">
+<h2></h2>
+<ul>
+<li class="fragment">Source: https://goo.gl/bk6dUi</li>
+</ul>
+</section><section id="different-types" class="slide level2">
+<h2>Different types</h2>
+<ul>
+<li class="fragment">Supervised</li>
+<li class="fragment">Unsupervised</li>
+<li class="fragment">Reinforcement</li>
+</ul>
+</section><section id="supervised" class="slide level2">
+<h2>Supervised</h2>
+<ul>
+<li class="fragment">Labels need to be provided</li>
+<li class="fragment">eg: classification</li>
+</ul>
+</section><section id="unsupervised" class="slide level2">
+<h2>Unsupervised</h2>
+<ul>
+<li class="fragment">No Label needed</li>
+<li class="fragment">eg: clustering</li>
+</ul>
+</section><section id="comparison-between-them" class="slide level2">
+<h2>Comparison between them</h2>
+</section><section id="section-5" class="slide level2" data-background-image="repo/2018-11-20-17-06-00-393723.png" data-background-size="contain">
+<h2></h2>
+</section><section id="exercise-on-clustering" class="slide level2">
+<h2>exercise on clustering</h2>
+<ul>
+<li class="fragment">How to cluster / group the following animals?</li>
+<li class="fragment">chicken, goldfish, goose, duck</li>
+</ul>
+</section><section id="answer-for-clustering" class="slide level2">
+<h2>Answer for Clustering</h2>
+<ul>
+<li class="fragment">{chicken, goose, duck} {goldfish}</li>
+<li class="fragment">{chicken}, {goldfish, goose, duck}</li>
+</ul>
+</section><section id="exercise-on-classifciation" class="slide level2">
+<h2>exercise on classifciation</h2>
+<ul>
+<li class="fragment">How to classify the following animals?</li>
+<li class="fragment">chicken, goldfish, goose, duck</li>
+</ul>
+</section><section id="answer-for-classification" class="slide level2">
+<h2>Answer for classification</h2>
+<ul>
+<li class="fragment">You cannot do it</li>
+<li class="fragment">No label provided!</li>
+</ul>
+</section><section id="section-6" class="slide level2" data-background-image="repo/2018-12-06-17-14-39-633050.png" data-background-size="contain">
+<h2></h2>
+</section><section id="classification-with-machine-learning" class="slide level2">
+<h2>Classification with Machine Learning</h2>
+<ul>
+<li class="fragment">Decision Tree</li>
+<li class="fragment">Logistic Regression</li>
+<li class="fragment">SVM</li>
+<li class="fragment">Random Forest</li>
+</ul>
+</section><section id="decision-tree" class="slide level2">
+<h2>Decision Tree</h2>
+<ul>
+<li class="fragment">Example: Titanic</li>
+</ul>
+</section><section id="section-7" class="slide level2" data-background-image="repo/2018-12-06-20-05-14-744350.png" data-background-size="contain">
+<h2></h2>
+</section><section id="data-of-titanic-passengers" class="slide level2">
+<h2>Data of Titanic Passengers</h2>
+</section><section id="section-8" class="slide level2" data-background-image="repo/2018-12-06-20-05-21-896991.png" data-background-size="contain">
+<h2></h2>
+</section><section id="the-trained-tree" class="slide level2">
+<h2>The trained tree</h2>
+<ul>
+<li class="fragment"><img src="repo/2018-11-20-15-34-18-047754.png" style="border-style: none" alt=""></li>
+<li class="fragment">Source: <a href="https://goo.gl/YyagUZ" class="uri">https://goo.gl/YyagUZ</a></li>
+</ul>
+</section><section id="decision-tree-in-scikit-learn" class="slide level2">
+<h2>Decision Tree in Scikit-learn</h2>
+<pre><code>from sklearn.datasets import load_iris
+from sklearn import tree
+iris = load_iris()
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(iris.data, iris.target)</code></pre>
+<ul>
+<li class="fragment">Source: <a href="https://goo.gl/dhQpTP" class="uri">https://goo.gl/dhQpTP</a></li>
+</ul>
+</section><section id="logistic-regression" class="slide level2">
+<h2>Logistic Regression</h2>
+<ul>
+<li class="fragment"><img src="repo/2018-12-05-20-06-44-391581.png" style="border-style: none" alt=""></li>
+<li class="fragment">Source: <a href="https://goo.gl/GXzumH" class="uri">https://goo.gl/GXzumH</a></li>
+</ul>
+</section><section id="how-it-works" class="slide level2">
+<h2>How it works</h2>
+</section><section id="section-9" class="slide level2" data-background-image="repo/2018-12-06-20-17-54-482506.gif" data-background-size="contain">
+<h2></h2>
+</section><section id="logistic-regression-in-scikit-learn" class="slide level2">
+<h2>Logistic Regression in Scikit-learn</h2>
+<pre><code>from sklearn.datasets import load_iris
+from sklearn.linear_model import LogisticRegression
+X, y = load_iris(return_X_y=True)
+clf = LogisticRegression(random_state=0, solver=&#39;lbfgs&#39;, multi_class=&#39;multinomial&#39;).fit(X, y)</code></pre>
+<ul>
+<li class="fragment">Source: <a href="https://goo.gl/447efU" class="uri">https://goo.gl/447efU</a></li>
+</ul>
+</section><section id="problems-of-classical-machine-learning" class="slide level2">
+<h2>Problems of classical machine learning</h2>
+<ul>
+<li class="fragment">Can not handle complex task
+<ul>
+<li class="fragment">hard to get features</li>
+<li class="fragment">non-linear separable</li>
+</ul></li>
+</ul>
+</section><section id="hard-to-get-features" class="slide level2">
+<h2>hard to get features</h2>
+</section><section id="section-10" class="slide level2" data-background-image="repo/2018-12-06-20-05-21-896991.png" data-background-size="contain">
+<h2></h2>
+</section><section id="section-11" class="slide level2" data-background-image="repo/2018-12-06-20-29-36-285119.png" data-background-size="contain">
+<h2></h2>
+</section><section id="feature-engineering" class="slide level2">
+<h2>Feature Engineering</h2>
+</section><section id="section-12" class="slide level2" data-background-image="repo/2018-12-06-20-23-03-671478.gif" data-background-size="contain">
+<h2></h2>
+</section><section id="out-of-date" class="slide level2">
+<h2>out-of-date</h2>
+</section><section id="section-13" class="slide level2" data-background-image="repo/2018-12-06-20-23-30-971045.png" data-background-size="contain">
+<h2></h2>
+</section><section id="example" class="slide level2">
+<h2>Example</h2>
+<ul>
+<li class="fragment">Please hand-craft feature for the following image of a panda:</li>
+<li class="fragment"><img src="repo/2018-11-20-15-52-26-612368.jpeg" style="border-style: none" alt=""></li>
+</ul>
+</section><section id="test-if-it-works" class="slide level2">
+<h2>Test if it works</h2>
+<ul>
+<li class="fragment">Try on the following images</li>
+</ul>
+</section><section id="section-14" class="slide level2" data-background-image="repo/2018-11-20-15-53-16-456803.jpeg" data-background-size="contain">
+<h2></h2>
+</section><section id="section-15" class="slide level2" data-background-image="repo/2018-11-20-15-53-24-826218.jpeg" data-background-size="contain">
+<h2></h2>
+</section><section id="non-linear-separable" class="slide level2">
+<h2>non-linear separable</h2>
+</section><section id="section-16" class="slide level2" data-background-image="repo/2018-12-06-20-27-09-371016.png" data-background-size="contain">
+<h2></h2>
+</section><section id="section-17" class="slide level2" data-background-image="repo/2018-12-06-20-27-22-455014.png" data-background-size="contain">
+<h2></h2>
+</section><section id="section-18" class="slide level2" data-background-image="repo/2018-12-06-21-46-07-607840.png" data-background-size="contain">
+<h2></h2>
+</section><section id="let-us-play" class="slide level2">
+<h2>Let us play</h2>
+<ul>
+<li class="fragment">Tensorflow Playground</li>
+</ul>
+</section><section id="section-19" class="slide level2" data-background-image="repo/2018-11-20-15-35-29-963592.jpeg" data-background-size="contain">
+<h2></h2>
+</section><section id="link-to-tensorflow-playground" class="slide level2">
+<h2>Link to Tensorflow Playground</h2>
+<ul>
+<li class="fragment">https://playground.tensorflow.org</li>
+</ul>
+</section><section id="solution" class="slide level2">
+<h2>Solution</h2>
+<ul>
+<li class="fragment">deep learning</li>
+</ul>
+</section></section>
+<section><section id="deep-learning-for-classification" class="title-slide slide level1"><h1>Deep Learning for Classification</h1></section><section id="definition-1" class="slide level2">
+<h2>definition</h2>
+<ul>
+<li class="fragment">Deep learning (also known as deep structured learning or hierarchical learning) is part of a broader family of machine learning methods based on learning data representations, as opposed to task-specific algorithms.</li>
+</ul>
+</section><section id="essentials-for-deep-learning" class="slide level2">
+<h2>Essentials for Deep Learning</h2>
+<ul>
+<li class="fragment">Data</li>
+<li class="fragment">Structure</li>
+<li class="fragment">Loss
+<ul>
+<li class="fragment">evaluate if model works well</li>
+</ul></li>
+</ul>
+</section><section id="data" class="slide level2">
+<h2>Data</h2>
+<ul>
+<li class="fragment">Tabular</li>
+<li class="fragment">Image</li>
+<li class="fragment">Sequencial (e.g., text)</li>
+</ul>
+</section><section id="structure" class="slide level2">
+<h2>Structure</h2>
+<ul>
+<li class="fragment">Dense Neural Network</li>
+<li class="fragment">Convolutional Neural Network</li>
+<li class="fragment">Recurrent Neural Network</li>
+<li class="fragment">Combination of them</li>
+</ul>
+</section><section id="examples" class="slide level2">
+<h2>Examples</h2>
+<ul>
+<li class="fragment">Image Classification</li>
+<li class="fragment">Text Classification</li>
+</ul>
+</section><section id="image-classification" class="slide level2">
+<h2>Image Classification</h2>
+<ul>
+<li class="fragment">End to end learning</li>
+<li class="fragment">No feature engineering needed</li>
+<li class="fragment">very complex structure</li>
+</ul>
+</section><section id="section-20" class="slide level2" data-background-image="repo/2018-11-20-15-56-24-218524.png" data-background-size="contain">
+<h2></h2>
+</section><section id="section-21" class="slide level2" data-background-image="repo/2018-11-20-15-55-27-466308.gif" data-background-size="contain">
+<h2></h2>
+</section><section id="text-classification" class="slide level2">
+<h2>Text Classification</h2>
+<ul>
+<li class="fragment">Sequence as Input</li>
+<li class="fragment">Judging from the current input and the state changed by previous inputs</li>
+<li class="fragment">Recurrent Neural Network</li>
+</ul>
+</section><section id="section-22" class="slide level2" data-background-image="repo/2018-11-20-16-03-33-575130.png" data-background-size="contain">
+<h2></h2>
+</section><section id="section-23" class="slide level2" data-background-image="repo/2018-11-20-16-27-15-226930.gif" data-background-size="contain">
+<h2></h2>
+</section><section id="problem-of-deep-learning" class="slide level2">
+<h2>Problem of Deep Learning</h2>
+<ul>
+<li class="fragment">Require a lot of data</li>
+<li class="fragment">Easy to suffer from <strong>Overfitting</strong>
+<ul>
+<li class="fragment">memorize the results, instead of learn the rules</li>
+</ul></li>
+<li class="fragment">A lot of computing power needed (GPU/TPU)</li>
+<li class="fragment">Time consuming</li>
+</ul>
+</section><section id="gpu" class="slide level2">
+<h2>GPU</h2>
+<ul>
+<li class="fragment">Expensive</li>
+<li class="fragment"><img src="repo/2018-11-20-17-14-31-546463.png" style="border-style: none" alt=""></li>
+</ul>
+</section><section id="example-1" class="slide level2">
+<h2>Example</h2>
+<ul>
+<li class="fragment">BERT (Bidirectional Encoder Representations from Transformers)</li>
+<li class="fragment">State of the art of Language Modeling</li>
+<li class="fragment">4 TPU pods (<strong>256 TPU</strong> chips) in 4 days!</li>
+</ul>
+</section></section>
+<section><section id="deep-transfer-learning-for-classification" class="title-slide slide level1"><h1>Deep Transfer Learning for Classification</h1></section><section id="transfer" class="slide level2">
+<h2>Transfer</h2>
+<ul>
+<li class="fragment">People who has got plenty of computing power train a model from scrach</li>
+<li class="fragment">release the model to public</li>
+<li class="fragment">Others can borrow the model</li>
+<li class="fragment">chop off several layers (near the output), replace with their own ones</li>
+<li class="fragment">Train the new model on their tasks</li>
+<li class="fragment">with small amount of data</li>
+</ul>
+</section><section id="example-of-image-classification" class="slide level2">
+<h2>Example of Image Classification</h2>
+</section><section id="model-we-borrow" class="slide level2">
+<h2>model we borrow</h2>
+<ul>
+<li class="fragment">imagenet</li>
+</ul>
+</section><section id="section-24" class="slide level2" data-background-image="repo/2018-12-06-22-35-59-005822.png" data-background-size="contain">
+<h2></h2>
+</section><section id="our-task" class="slide level2">
+<h2>Our task</h2>
+<ul>
+<li class="fragment">Walle vs Doraemon</li>
+</ul>
+</section><section id="section-25" class="slide level2" data-background-image="repo/2018-11-20-16-42-58-793537.jpeg" data-background-size="contain">
+<h2></h2>
+</section><section id="section-26" class="slide level2" data-background-image="repo/2018-11-20-16-42-48-244924.jpeg" data-background-size="contain">
+<h2></h2>
+</section><section id="experiment" class="slide level2">
+<h2>Experiment</h2>
+<ul>
+<li class="fragment">training set: 140 images for each class, 280 in total</li>
+<li class="fragment">valid set: 16 images for Doraemon, 17 images for Walle</li>
+<li class="fragment">Env: fast.ai 1.0 + Pytorch 1.0</li>
+</ul>
+</section><section id="code" class="slide level2">
+<h2>Code</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" data-line-number="1">path <span class="op">=</span> Path(<span class="st">&#39;imgs&#39;</span>)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">data <span class="op">=</span> ImageDataBunch.from_folder(path, test<span class="op">=</span><span class="st">&#39;test&#39;</span>, ds_tfms<span class="op">=</span>get_transforms(), size<span class="op">=</span><span class="dv">224</span>)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">learn <span class="op">=</span> ConvLearner(data, models.resnet34, metrics<span class="op">=</span>accuracy)</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">learn.fit_one_cycle(<span class="dv">1</span>)</a></code></pre></div>
+</section><section id="result" class="slide level2">
+<h2>Result</h2>
+</section><section id="section-27" class="slide level2" data-background-image="repo/2018-11-20-16-48-07-361279.jpeg" data-background-size="contain">
+<h2></h2>
+</section><section id="time" class="slide level2">
+<h2>Time</h2>
+<ul>
+<li class="fragment"><img src="repo/2018-11-20-16-49-40-358113.jpeg" style="border-style: none" alt=""></li>
+</ul>
+</section><section id="example-of-text-classification" class="slide level2">
+<h2>Example of Text Classification</h2>
+<ul>
+<li class="fragment">Can we do transfer learning on text classification?</li>
+<li class="fragment">Yes</li>
+</ul>
+</section><section id="language-models" class="slide level2">
+<h2>language models</h2>
+</section><section id="section-28" class="slide level2" data-background-image="repo/2018-12-06-20-40-11-241248.png" data-background-size="contain">
+<h2></h2>
+</section><section id="pretrained-model-we-borrow" class="slide level2">
+<h2>pretrained model we borrow</h2>
+<ul>
+<li class="fragment">WikiText-103 (WT103)</li>
+</ul>
+</section><section id="experiment-1" class="slide level2">
+<h2>Experiment</h2>
+<ul>
+<li class="fragment">task
+<ul>
+<li class="fragment">sentiment analysis</li>
+</ul></li>
+<li class="fragment">data
+<ul>
+<li class="fragment">Yelp reviews Polarity</li>
+</ul></li>
+</ul>
+</section><section id="section-29" class="slide level2" data-background-image="repo/2018-11-20-16-51-53-932612.png" data-background-size="contain">
+<h2></h2>
+</section><section id="state-of-the-art" class="slide level2">
+<h2>State of the Art</h2>
+<ul>
+<li class="fragment"><img src="repo/2018-11-01-18-28-25-275822.png" style="border-style: none" alt=""></li>
+<li class="fragment">Source: Shen, D., Wang, G., Wang, W., Min, M. R., Su, Q., Zhang, Y., … &amp; Carin, L. (2018). Baseline needs more love: On simple word-embedding-based models and associated pooling mechanisms. arXiv preprint arXiv:1805.09843.</li>
+</ul>
+</section><section id="code-1" class="slide level2">
+<h2>Code</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" data-line-number="1">data_lm <span class="op">=</span> TextLMDataBunch.from_csv(path, valid<span class="op">=</span><span class="st">&#39;test&#39;</span>)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">data_clas <span class="op">=</span> TextClasDataBunch.from_csv(path, valid<span class="op">=</span><span class="st">&#39;test&#39;</span>, vocab<span class="op">=</span>data_lm.train_ds.vocab)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">learn <span class="op">=</span> RNNLearner.language_model(data_lm, pretrained_fnames<span class="op">=</span>[<span class="st">&#39;lstm_wt103&#39;</span>, <span class="st">&#39;itos_wt103&#39;</span>], drop_mult<span class="op">=</span><span class="fl">0.5</span>)</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">learn.fit_one_cycle(<span class="dv">1</span>, <span class="fl">1e-2</span>)</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">learn.unfreeze()</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">learn.fit_one_cycle(<span class="dv">1</span>, <span class="fl">1e-3</span>)</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">learn.save_encoder(<span class="st">&#39;ft_enc&#39;</span>)</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">learn <span class="op">=</span> RNNLearner.classifier(data_clas, drop_mult<span class="op">=</span><span class="fl">0.5</span>)</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">learn.load_encoder(<span class="st">&#39;ft_enc&#39;</span>)</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">learn.fit_one_cycle(<span class="dv">1</span>, <span class="fl">1e-2</span>)</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">learn.freeze_to(<span class="op">-</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">learn.fit_one_cycle(<span class="dv">1</span>, <span class="bu">slice</span>(<span class="fl">5e-3</span><span class="op">/</span><span class="fl">2.</span>, <span class="fl">5e-3</span>))</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">learn.unfreeze()</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14">learn.fit_one_cycle(<span class="dv">1</span>, <span class="bu">slice</span>(<span class="fl">2e-3</span><span class="op">/</span><span class="dv">100</span>, <span class="fl">2e-3</span>))</a></code></pre></div>
+</section><section id="result-1" class="slide level2">
+<h2>Result</h2>
+</section><section id="section-30" class="slide level2" data-background-image="repo/2018-11-20-16-56-04-990596.jpeg" data-background-size="contain">
+<h2></h2>
+</section><section id="tutorials" class="slide level2">
+<h2>Tutorials</h2>
+</section><section id="section-31" class="slide level2" data-background-image="repo/2018-12-06-20-42-08-512693.png" data-background-size="contain">
+<h2></h2>
+</section><section id="section-32" class="slide level2" data-background-image="repo/2018-12-06-20-42-20-088170.png" data-background-size="contain">
+<h2></h2>
+</section><section id="links" class="slide level2">
+<h2>Links</h2>
+<ul>
+<li class="fragment"><a href="https://medium.com/datadriveninvestor/deep-learning-with-python-part-0-setup-fast-ai-1-0-on-google-cloud-c3d41aadbc8c">Deep Learning with Python, Part 0: Setup Fast.ai 1.0 on Google Cloud</a></li>
+<li class="fragment"><a href="https://medium.com/datadriveninvestor/deep-learning-with-python-and-fast-ai-part-1-image-classification-with-pre-trained-model-cd9364107872">Deep Learning with Python and fast.ai, Part 1: Image classification with pre-trained model</a></li>
+<li class="fragment"><a href="https://medium.com/datadriveninvestor/deep-learning-with-python-and-fast-ai-part-2-nlp-classification-with-transfer-learning-e7aaf7514e04">Deep Learning with Python and fast.ai, Part 2: NLP Classification with Transfer Learning</a></li>
+</ul>
+</section><section id="questions" class="slide level2">
+<h2>Questions?</h2>
+</section><section id="the-end" class="slide level2">
+<h2>The End</h2>
+<p>Thanks for your time!</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="reveal.js/lib/js/head.min.js"></script>
+  <script src="reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+            keyboard: {
+            39: 'next',
+            37: 'prev'
+        },
+    
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'convex', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
